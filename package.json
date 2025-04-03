@@ -1,0 +1,56 @@
+{
+  "name": "micboard",
+  "version": "0.8.5",
+  "description": "An intelligent mic tray for ethernet enabled Shure microphones.",
+  "main": "main.js",
+  "scripts": {
+    "server": "python3 py/micboard.py",
+    "binary": "pyinstaller py/micboard.spec",
+    "build": "node node_modules/webpack/bin/webpack.js --progress --hide-modules --config=webpack.config.js",
+    "app": "electron .",
+    "pack": "node electron-build.js",
+    "dist": "electron-builder",
+    "static": "python -m http.server 8058"
+  },
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karlcswanson/micboard.git"
+  },
+  "author": "karlcswanson@gmail.com",
+  "bugs": {
+    "url": "https://github.com/karlcswanson/micboard/issues"
+  },
+  "homepage": "https://github.com/karlcswanson/micboard",
+  "dependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/preset-env": "^7.26.9",
+    "@babel/preset-react": "^7.0.0",
+    "@ibm/plex": "^1.4.1",
+    "@shopify/draggable": "^1.0.0-beta.8",
+    "babel-loader": "^8",
+    "bootstrap": "^4.3.1",
+    "css-loader": "^2.1.1",
+    "file-loader": "^3.0.1",
+    "jquery": "^3.4.1",
+    "node-gyp": "^4.0.0",
+    "popper.js": "^1.15.0",
+    "qrcode": "^1.4.1",
+    "sass": "^1.86.1",
+    "sass-loader": "^7.3.1",
+    "smoothie": "^1.35.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.8",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.21.0",
+    "electron": "^21.0.0",
+    "electron-builder": "^20.44.4",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.18.2"
+  }
+}
