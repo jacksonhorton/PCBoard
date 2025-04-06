@@ -21,7 +21,7 @@ pco_update_list = []
 
 FIRST_VOCALIST_SLOT = 1
 MAX_NUM_VOCALISTS = 4
-FIRST_HOST_SLOT = 6
+FIRST_HOST_SLOT = 5
 MAX_NUM_HOSTS = 2
 
 pco = pypco.PCO(PCO_APPLICATION_KEY, PCO_API_SECRET)
@@ -54,10 +54,12 @@ def getUpcomngPlan():
     service_types = getServiceTypes()
     next_upcoming_plan = {}
     for service_type in service_types:
-        raw_plans = pco.iterate('/services/v2/service_types/' + service_type['data']['id'] + '/plans', filter='future', order='sort_date', include='plan_times')
+        raw_plans = pco.iterate('/services/v2/service_types/' + service_type['data']['id'] + '/plans', per_page=50, order='-sort_date', include='plan_times')
         for raw_plan in raw_plans:
+            # print(f"raw plan:  {raw_plan['data']['attributes']['sort_date']}")
             service_length = raw_plan['data']['attributes']['total_length']
-            service_length = service_length + 300
+            # service_length = service_length + 300
+            service_length = service_length + 50000
             sort_date =  datetime.strptime(raw_plan['data']['attributes']['sort_date'],'%Y-%m-%dT%H:%M:%S%z')
             end_date = sort_date + timedelta(seconds=service_length)
             if next_upcoming_plan:
@@ -65,36 +67,36 @@ def getUpcomngPlan():
                 if sort_date < next_date:
                     if end_date > today:
                         next_upcoming_plan = raw_plan
-
             else:
-                if end_date >= today:
+                if end_date > today:
                     next_upcoming_plan = raw_plan
     return next_upcoming_plan
 
 
-def getTeamMembers(slot):
-    upcoming_plan = getUpcomngPlan()
-    assigned_team_members = pco.iterate('/services/v2/service_types/' + upcoming_plan['data']['relationships']['service_type']['data']['id'] + '/plans/' + upcoming_plan['data']['id'] + '/team_members',filter='confirmed')
+# def getTeamMembers(slot):
+#     upcoming_plan = getUpcomngPlan()
+#     print("TODAY IS: " + upcoming_plan['data']['attributes']['sort_date'])
+#     assigned_team_members = pco.iterate('/services/v2/service_types/' + upcoming_plan['data']['relationships']['service_type']['data']['id'] + '/plans/' + upcoming_plan['data']['id'] + '/team_members',filter='confirmed')
 
-    assigned_team_members = [assigned_member for assigned_member in assigned_team_members if assigned_member['data']['relationships']['team']['data']['id'] in allowed_team_ids]
+#     assigned_team_members = [assigned_member for assigned_member in assigned_team_members if assigned_member['data']['relationships']['team']['data']['id'] in allowed_team_ids]
 
-    intNumber = 1
-    vocals = {}
-    for vocal_team_member in assigned_team_members:
-        if slot == intNumber:
-            # vocalString = str(intNumber) + '-' + vocal_team_member['data']['attributes']['name']
-            name=vocal_team_member['data']['attributes']['name']
-            newvocal={name:intNumber}
-            vocals.update(newvocal)
-            intNumber = intNumber + 1
-        else:
-            intNumber = intNumber + 1
+#     intNumber = 1
+#     vocals = {}
+#     for vocal_team_member in assigned_team_members:
+#         if slot == intNumber:
+#             # vocalString = str(intNumber) + '-' + vocal_team_member['data']['attributes']['name']
+#             name=vocal_team_member['data']['attributes']['name']
+#             newvocal={name:intNumber}
+#             vocals.update(newvocal)
+#             intNumber = intNumber + 1
+#         else:
+#             intNumber = intNumber + 1
         
-    return vocals
+#     return vocals
 
 def getTeam():
     upcoming_plan = getUpcomngPlan()
-    
+    print("TODAY IS: " + upcoming_plan['data']['attributes']['sort_date'])
     assigned_team_members = pco.iterate('/services/v2/service_types/' + upcoming_plan['data']['relationships']['service_type']['data']['id'] + '/plans/' + upcoming_plan['data']['id'] + '/team_members',filter='confirmed')
 
     assigned_team_members = [assigned_member for assigned_member in assigned_team_members if assigned_member['data']['relationships']['team']['data']['id'] in allowed_team_ids]
