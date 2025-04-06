@@ -67,7 +67,7 @@ def getUpcomngPlan():
                         next_upcoming_plan = raw_plan
 
             else:
-                if end_date > today:
+                if end_date >= today:
                     next_upcoming_plan = raw_plan
     return next_upcoming_plan
 
