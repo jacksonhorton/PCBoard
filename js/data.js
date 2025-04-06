@@ -69,7 +69,7 @@ function updateGroup(data) {
 }
 
 export function initLiveData() {
-  setInterval(JsonUpdate, 1000);
+  setInterval(JsonUpdate, 300000);
   setInterval(PcoJsonUpdate, 300000);
   wsConnect();
 }
