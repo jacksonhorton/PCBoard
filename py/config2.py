@@ -7,7 +7,6 @@ import uuid
 import time
 from shutil import copyfile
 from dotenv import load_dotenv
-
 import shure
 import offline
 
@@ -152,6 +151,7 @@ def config():
     logging.info('Starting Micboard {}'.format(config_tree['micboard_version']))
 
 def reconfig(slots):
+    import tornado_server
     tornado_server.SocketHandler.close_all_ws()
 
     config_tree['slots'] = slots
