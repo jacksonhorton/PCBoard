@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Mic Sections</title>
+    <title>Micboard</title>
     <style>
         body {
             background-color: black;
@@ -108,13 +108,14 @@
         .section .name {
             text-shadow: 2px 2px 10px rgba(30, 30, 30, 1.0);
             color: #fff;
-            width: 100%;
+            width: 90%;
+            padding-left: 5px;
+            padding-right: 5px;
             font-size: 40px;
             font-weight: bolder;
             font-style: italic;
             text-align: center;
             font-family: monospace;
-            padding: 5px 10px;
             z-index: 2;
         }
     </style>
@@ -176,20 +177,25 @@
         }
 
         function adjustTextSize(el) {
-            // Read the computed font size
-            let computedStyle = window.getComputedStyle(el);
-            let fontSize = parseFloat(computedStyle.fontSize);
+            try {
+                // Read the computed font size
+                let computedStyle = window.getComputedStyle(el);
+                let fontSize = parseFloat(computedStyle.fontSize);
 
-            // Safety check: Avoid infinite loop by setting a minimum font size.
-            const minFontSize = 10;
+                // Safety check: Avoid infinite loop by setting a minimum font size.
+                const minFontSize = 10;
 
-            // console.log(fontSize, el.scrollWidth, el.clientWidth);
-            
-            // Loop: while the text is overflowing, decrease the font size.
-            while (el.scrollWidth > el.clientWidth && fontSize > minFontSize) {
-                // console.log("RESIZING")
-                fontSize -= 1;  // Decrease by 1px (you can adjust the step)
-                el.style.fontSize = fontSize + "px";
+                // console.log(fontSize, el.scrollWidth, el.clientWidth);
+
+                // Loop: while the text is overflowing, decrease the font size.
+                while (el.scrollWidth > el.clientWidth && fontSize > minFontSize) {
+                    // console.log("RESIZING")
+                    fontSize -= 1;  // Decrease by 1px (you can adjust the step)
+                    el.style.fontSize = fontSize + "px";
+                }
+            } catch (error) {
+                // console.log("Failed to resize text for " + el);
+                return
             }
         }
         

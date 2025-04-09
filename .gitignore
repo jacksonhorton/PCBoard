@@ -26,3 +26,5 @@ static/*.js*
 config/*
 .env
 static/images/*
+config.json
+data.json
