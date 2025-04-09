@@ -119,7 +119,7 @@ def filehash(fn):
 
 def getFiles():
     # read access token
-    imagesDirectory = "static/images/"
+    imagesDirectory = "static/images"
     # Authenticate with Dropbox
     print('Downloading images from Dropbox...')
     print('Local images folder is ' + imagesDirectory)
