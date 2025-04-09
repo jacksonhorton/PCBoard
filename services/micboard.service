@@ -3,9 +3,9 @@ Description=Micboard Service
 After=network.target
 
 [Service]
-Environment=MICBOARD_PORT=80
-ExecStart=/usr/bin/python3 -u py/micboard.py
-WorkingDirectory=/home/micboard/Overflow-Micboard
+Environment=MICBOARD_PORT=8058
+ExecStart=/usr/bin/python3 -u app.py
+WorkingDirectory=/home/pi/Overflow-Micboard
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
