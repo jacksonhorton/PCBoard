@@ -1,0 +1,16 @@
+[Unit]
+Description=Chromium Kiosk Mode
+After=micboard.service
+Requires=micboard.service
+
+[Service]
+Environment=XAUTHORITY=/home/pi/.Xauthority
+Environment=DISPLAY=:0
+User=pi
+Group=pi
+ExecStartPre=/bin/sleep 5
+ExecStart=/usr/bin/chromium-browser --noerrdialogs --start-fullscreen --disable-infobars --disable-session-crashed-bubble --app=http://localhost:5000/
+Restart=on-failure
+
+[Install]
+WantedBy=graphical.target
