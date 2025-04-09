@@ -16,9 +16,13 @@ DB_OAUTH2_REFRESH_TOKEN = os.environ["DB_OAUTH2_REFRESH_TOKEN"]
 DB_APP_KEY = os.environ["DB_APP_KEY"] 
 DB_APP_SECRET = os.environ["DB_APP_SECRET"]
 
+# Constants
+imagesDirectory = "static/images"
+
 
 def start_background_thread():
     """Starts the background thread for fetching data."""
+    setupImageDirectory()
     thread = threading.Thread(target=fetch_data, daemon=True)
     thread.start()
 
@@ -29,6 +33,10 @@ def fetch_data():
         except Exception as e:
             print(f"Error fetching dropbox files: {e}")
         sleep(600)
+
+def setupImageDirectory():
+    # Ensure the directory exists
+    Path(imagesDirectory).mkdir(parents=True, exist_ok=True)
 
 class DropboxContentHasher(object):
     """
@@ -118,8 +126,6 @@ def filehash(fn):
     return hasher.hexdigest()
 
 def getFiles():
-    # read access token
-    imagesDirectory = "static/images"
     # Authenticate with Dropbox
     print('Downloading images from Dropbox...')
     print('Local images folder is ' + imagesDirectory)

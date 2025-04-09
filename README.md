@@ -9,6 +9,10 @@ A visual monitoring tool for network enabled Shure devices.  Micboard simplifies
 ![Micboard Storage Photo](docs/img/wccc.jpg)
 
 
+#### To view service logs:
+journalctl -u micboard.service -f
+
+
 ![micboard diagram](docs/img/slug.png)
 
 ## Screenshots
