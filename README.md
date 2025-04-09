@@ -2,9 +2,9 @@
   <a href="https://micboard.io"><img width="90px" height="90px" src="docs/img/logo.png"></a>
 </p>
 
-<h1 align="center">Micboard</h1>
+<h1 align="center">PCBoard</h1>
 
-A visual monitoring tool for network enabled Shure devices.  Micboard simplifies microphone monitoring and storage for artists, engineers, and volunteers.  View battery, audio, and RF levels from any device on the network.
+A visual monitoring tool for keeping up with services in PlanningCenterOnline. PCBoard displays instrument and vocal roles at a glance.
 
 ![Micboard Storage Photo](docs/img/wccc.jpg)
 

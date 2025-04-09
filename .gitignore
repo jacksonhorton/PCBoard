@@ -1,11 +1,8 @@
 config.ini
-dotstar.so
 .ftpconfig
 assets/
 *.pyc
 *.DS_Store
-static/serveit.py
-mictray/dist/*
 dist/*
 mictray/build/*
 build/*
@@ -14,10 +11,7 @@ build/*
 static/gifs/*
 *.mp4
 *.gif
-static/backgrounds/*
-node_modules/*
 package-lock.json
-DCIDMap.xml
 .python-version
 static/data2.json
 *.map

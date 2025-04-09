@@ -24,7 +24,7 @@ import pytz
 # From .env
 load_dotenv()
 PCO_APPLICATION_KEY = os.environ["PCO_APPLICATION_KEY"] 
-PCO_API_SECRET = os.environ["PCO_API_SECRET"] 
+PCO_API_SECRET = os.environ["PCO_API_SECRET"]
 
 # Constants
 FIRST_VOCALIST_SLOT = 1
