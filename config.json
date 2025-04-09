@@ -1,0 +1,52 @@
+{
+    "sections": [
+        {
+            "label": "HH1",
+            "role": "Vocal 1"
+        },
+        {
+            "label": "HH2",
+            "role": "Vocal 2"
+        },
+        {
+            "label": "HH3",
+            "role": "Vocal 3"
+        },
+        {
+            "label": "HH4",
+            "role": "Vocal 4"
+        },
+        {
+            "label": "Drums",
+            "role": "Drums"
+        },
+        {
+            "label": "Bass",
+            "role": "Bass Guitar"
+        },
+        {
+            "label": "Keys",
+            "role": "Keys"
+        },
+        {
+            "label": "AG",
+            "role": "Acoustic Guitar"
+        },
+        {
+            "label": "EG",
+            "role": "Electric Guitar"
+        },
+        {
+            "label": "EG2",
+            "role": "Electric Guitar 2"
+        },
+        {
+            "label": "Host 1",
+            "role": "Host 1"
+        },
+        {
+            "label": "Host 2",
+            "role": "Host 2"
+        }
+    ]
+}

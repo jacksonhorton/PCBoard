@@ -1,20 +1,34 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
+import threading
+import os
 import sys
-from threading import local
-import tornado_server
-import config2
-sys.path.append("/usr/local/lib/python3.9/site-packages")
-sys.path.append('.')
 import dropbox
-import time
-import config2
-import json
+from dotenv import load_dotenv
 from pathlib import Path
+from time import sleep
 
 import hashlib
 import six
 
-#config2.config()
+
+# From .env
+load_dotenv()
+DB_OAUTH2_REFRESH_TOKEN = os.environ["DB_OAUTH2_REFRESH_TOKEN"] 
+DB_APP_KEY = os.environ["DB_APP_KEY"] 
+DB_APP_SECRET = os.environ["DB_APP_SECRET"]
+
+
+def start_background_thread():
+    """Starts the background thread for fetching data."""
+    thread = threading.Thread(target=fetch_data, daemon=True)
+    thread.start()
+
+def fetch_data():
+    while True:
+        try:
+            getFiles()
+        except Exception as e:
+            print(f"Error fetching dropbox files: {e}")
+        sleep(600)
 
 class DropboxContentHasher(object):
     """
@@ -93,63 +107,6 @@ class DropboxContentHasher(object):
         c._block_pos = self._block_pos
         return c
 
-
-class StreamHasher(object):
-    """
-    A wrapper around a file-like object (either for reading or writing)
-    that hashes everything that passes through it.  Can be used with
-    DropboxContentHasher or any 'hashlib' hasher.
-    Example:
-        hasher = DropboxContentHasher()
-        with open('some-file', 'rb') as f:
-            wrapped_f = StreamHasher(f, hasher)
-            response = some_api_client.upload(wrapped_f)
-        locally_computed = hasher.hexdigest()
-        assert response.content_hash == locally_computed
-    """
-
-    def __init__(self, f, hasher):
-        self._f = f
-        self._hasher = hasher
-
-    def close(self):
-        return self._f.close()
-
-    def flush(self):
-        return self._f.flush()
-
-    def fileno(self):
-        return self._f.fileno()
-
-    def tell(self):
-        return self._f.tell()
-
-    def read(self, *args):
-        b = self._f.read(*args)
-        self._hasher.update(b)
-        return b
-
-    def write(self, b):
-        self._hasher.update(b)
-        return self._f.write(b)
-
-    def next(self):
-        b = self._f.next()
-        self._hasher.update(b)
-        return b
-
-    def readline(self, *args):
-        b = self._f.readline(*args)
-        self._hasher.update(b)
-        return b
-
-    def readlines(self, *args):
-        bs = self._f.readlines(*args)
-        for b in bs:
-            self._hasher.update(b)
-        return b
-
-
 def filehash(fn):
     hasher = DropboxContentHasher()
     with open(fn, 'rb') as f:
@@ -162,42 +119,34 @@ def filehash(fn):
 
 def getFiles():
     # read access token
-    localdirectory = config2.gif_dir
+    imagesDirectory = "static/images/"
     # Authenticate with Dropbox
     print('Downloading images from Dropbox...')
-    print('Local backgrounds fold is' + localdirectory)
+    print('Local images folder is ' + imagesDirectory)
     dbx = dropbox.Dropbox(
-                app_key = config2.DB_APP_KEY,
-                app_secret = config2.DB_APP_SECRET,
-                oauth2_refresh_token = config2.DB_OAUTH2_REFRESH_TOKEN
+                app_key = DB_APP_KEY,
+                app_secret = DB_APP_SECRET,
+                oauth2_refresh_token = DB_OAUTH2_REFRESH_TOKEN
     )
-    localdirectory = config2.gif_dir
     for entry in dbx.files_list_folder('').entries:
-        localfile = Path(localdirectory + '/' + entry.name)
+        localfile = Path(imagesDirectory + '/' + entry.name)
         if localfile.is_file():
             localfilehash = filehash(localfile)
             if localfilehash == entry.content_hash:
-                print(entry.name + ' already exists. No update needed')
+                # print(entry.name + ' already exists. No update needed')
+                continue
             else:
                 print(entry.name + ' has been updated. Downloading update.')
-                newPath = localdirectory + '/' + entry.name
+                newPath = imagesDirectory + '/' + entry.name
                 currentPath = '/' + entry.name
                 dbx.files_download_to_file(newPath,currentPath)
         else:
             print(entry.name + ' does not exist. Downloading file')
-            newPath = localdirectory + '/' + entry.name
+            newPath = imagesDirectory + '/' + entry.name
             currentPath = '/' + entry.name
             dbx.files_download_to_file(newPath,currentPath)
     
-    jpgs = tornado_server.file_list('.jpg')
-    print(jpgs)
-
-    with open('data.json', 'r+') as f:
-        json_data = json.load(f)
-        json_data['jpg'] = jpgs
-        f.seek(0)
-        f.write(json.dumps(json_data))
-        f.truncate()
-
-    time.sleep(300)
-    getFiles()
+if __name__ == "__main__":
+    while True:
+        getFiles()
+        sleep(10)

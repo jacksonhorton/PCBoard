@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mic Sections</title>
+    <style>
+        body {
+            background-color: black;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .bg-service-info-label {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 999;
+            color: #fff;
+            text-shadow: 2px 2px 10px rgba(30, 30, 30, 1.0);
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 0.2rem;
+            font-family: monospace;
+            white-space: pre-line;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .section {
+            flex: 1;
+            border: 1px solid #ccc;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Background layers for cross-fade */
+        .bg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .bg-img-top {
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .bg-bottom {
+            z-index: 0;
+        }
+
+        .section .md-label {
+            background-color: rgba(1, 1, 1, 0.7);
+            /* box-shadow: 2px 2px 16px rgba(245, 245, 245, 0.7); */
+            color: rgb(255, 255, 255);
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 36px;
+            font-weight: bold;
+            letter-spacing: 0.15rem;
+            font-family: monospace;
+            padding: 5px 10px;
+            margin-top: 15px;
+            opacity: 0;
+            z-index: 3;
+            transition: opacity 2s ease;
+        }
+
+        .section .label {
+            text-shadow: 2px 2px 16px rgba(30, 30, 30, 1.0);
+            color: #fff;
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 0.1rem;
+            font-family: monospace;
+            padding: 5px 10px;
+            margin-top: 15px;
+            z-index: 2;
+        }
+
+        .section .name {
+            text-shadow: 2px 2px 10px rgba(30, 30, 30, 1.0);
+            color: #fff;
+            width: 100%;
+            font-size: 40px;
+            font-weight: bolder;
+            font-style: italic;
+            text-align: center;
+            font-family: monospace;
+            padding: 5px 10px;
+            z-index: 2;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="sections-container">
+        <!-- Sections will be dynamically inserted here -->
+    </div>
+    <div class="bg-service-info-label" id="service-info"></div>
+    <script>
+        const GRADIENTS = [
+            "linear-gradient(145deg, #0d0d0d, #303030, #00ff7f)",
+            "linear-gradient(145deg, #0a0a0a, #333333, #ff5722)",
+            "linear-gradient(145deg, #141e30, #243b55)",
+            "linear-gradient(145deg, #080808, #1f1f1f, #e91e63)",
+            "linear-gradient(145deg, #111111, #555555, #f09c00)",
+            "linear-gradient(145deg, #0f0f0f, #1a1a1a, #f44336)",
+            "linear-gradient(145deg, #141414, #2c2c2c, #9c27b0)",
+            "linear-gradient(145deg, #1d1d1d, #3a3a3a)",
+            "linear-gradient(145deg, #0d0d0d, #2e2e2e, #00aaff)",
+            "linear-gradient(145deg, #101010, #2b2b2b, #ff9800)",
+            "linear-gradient(145deg, #0d0d0d, #1e1e1e, #00bcd4)",
+            "linear-gradient(145deg, #141414, #323232, #4caf50)",
+            "linear-gradient(145deg, #000000, #3a3a3a, #2196f3)",
+            "linear-gradient(145deg, #080808, #222222, #03a9f4)",
+            "linear-gradient(145deg, #0b0b0b, #252525, #673ab7)",
+            "linear-gradient(145deg, #101010, #262626, #ffc107)",
+            "linear-gradient(145deg, #121212, #292929, #8bc34a)",
+            "linear-gradient(145deg, #0c0c0c, #292929, #7c4dff)",
+            "linear-gradient(145deg, #000000, #434343)",
+            "linear-gradient(145deg, #111111, #2a2a2a, #ff4081)",
+            "linear-gradient(145deg, #0a0a0a, #262626, #ff0077)",
+            "linear-gradient(145deg, #0f0f0f, #333333, #00cc66)",
+            "linear-gradient(145deg, #080808, #262626, #e60073)",
+            "linear-gradient(145deg, #121212, #2b2b2b, #0099ff)",
+            "linear-gradient(145deg, #101010, #303030, #ff3300)",
+            "linear-gradient(145deg, #0c0c0c, #323232, #00e5ff)",
+            "linear-gradient(145deg, #0d0d0d, #2e2e2e, #ff1a75)",
+            "linear-gradient(145deg, #090909, #252525, #00ccff)",
+            "linear-gradient(145deg, #0f0f0f, #303030, #ff6600)",
+            "linear-gradient(145deg, #0b0b0b, #272727, #ff0099)",
+            "linear-gradient(145deg, #121212, #383838, #00ffcc)",
+            "linear-gradient(145deg, #0d0d0d, #404040, #ff3366)",
+            "linear-gradient(145deg, #0e0e0e, #393939, #33ccff)",
+            "linear-gradient(145deg, #101010, #2f2f2f, #ff0033)",
+            "linear-gradient(145deg, #080808, #3a3a3a, #00ff66)",
+            "linear-gradient(145deg, #0c0c0c, #353535, #ff0099)",
+            "linear-gradient(145deg, #0a0a0a, #323232, #00ccff)",
+            "linear-gradient(145deg, #0d0d0d, #3c3c3c, #ff3300)",
+            "linear-gradient(145deg, #121212, #404040, #00ffcc)",
+            "linear-gradient(145deg, #0f0f0f, #373737, #ff0033)"
+        ];
+        const reloadDataSeconds = 5;
+        const gradientFadeSeconds = 4;
+
+        function getRandomGradient() {
+            return GRADIENTS[Math.floor(Math.random() * GRADIENTS.length)]
+        }
+
+        function adjustTextSize(el) {
+            // Read the computed font size
+            let computedStyle = window.getComputedStyle(el);
+            let fontSize = parseFloat(computedStyle.fontSize);
+
+            // Safety check: Avoid infinite loop by setting a minimum font size.
+            const minFontSize = 10;
+
+            // console.log(fontSize, el.scrollWidth, el.clientWidth);
+            
+            // Loop: while the text is overflowing, decrease the font size.
+            while (el.scrollWidth > el.clientWidth && fontSize > minFontSize) {
+                // console.log("RESIZING")
+                fontSize -= 1;  // Decrease by 1px (you can adjust the step)
+                el.style.fontSize = fontSize + "px";
+            }
+        }
+        
+        function hideSectionIfNoName(sectionDiv) {
+            // console.log("Checking...")
+            let nameLabel = sectionDiv.querySelector('.name')
+
+            if (!nameLabel || nameLabel.textContent === "") {
+                // console.log("Hiding")
+                sectionDiv.style.width = "0%";
+                sectionDiv.style.display = "none";
+            }
+            else {
+                sectionDiv.style.width = "100%";
+                sectionDiv.style.display = "flex";
+            }
+        }
+
+        /**
+         * Creates a new section element.
+         * If a section uses a gradient (i.e. no image provided), two background layers
+         * are created: one for the visible state (opacity: 1) and one hidden (opacity: 0).
+         * For an image, a single background layer is created.
+         */
+        function createSectionElement(section, mdName="") {
+            const sectionDiv = document.createElement('div');
+            sectionDiv.className = 'section';
+            sectionDiv.dataset.label = section.label;
+
+            const imgLayer = document.createElement('div');
+            imgLayer.className = 'bg-layer bg-img-top';
+            imgLayer.style.transition = `opacity ${gradientFadeSeconds}s ease`;
+            imgLayer.style.opacity = "0";
+
+            // gradient layer
+            const bottomLayer = document.createElement('div');
+            bottomLayer.className = 'bg-layer bg-bottom';
+            bottomLayer.style.opacity = "1";
+            bottomLayer.style.backgroundImage = getRandomGradient();
+            // Create and append the label element.
+            const labelDiv = document.createElement('div');
+            labelDiv.className = 'label';
+            labelDiv.innerText = section.label;
+
+            if (section.img) {
+                imgLayer.style.backgroundImage = 'url(' + section.img + ')';
+                setTimeout(() => {
+                    imgLayer.style.opacity = "1";
+                }, gradientFadeSeconds);
+            }
+            else {
+                imgLayer.style.backgroundImage = '';
+            }
+            sectionDiv.appendChild(labelDiv);
+            sectionDiv.appendChild(imgLayer);
+            sectionDiv.appendChild(bottomLayer);
+
+
+            // Create and append the name element if available.
+            if (section.name) {
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'name';
+                nameDiv.innerText = section.name;
+                sectionDiv.appendChild(nameDiv);
+            }
+
+            const mdDiv = document.createElement('div');
+            mdDiv.className = 'md-label';
+            mdDiv.innerText = "MD";
+            if (section.name === mdName) {
+                mdDiv.style.opacity = 1;
+            }
+            else{ 
+                mdDiv.style.opacity = 0;
+            }
+            sectionDiv.appendChild(mdDiv);
+
+            hideSectionIfNoName(sectionDiv);
+
+            return sectionDiv;
+        }
+
+    function fadeOutImageSection(sectionDiv) {
+        if (sectionDiv.style.opacity === 0) {
+            // No change; nothing to update. Just make sure background image is clear
+            imgLayer.style.backgroundImage = "";
+            return;
+        } 
+        let imgLayer = sectionDiv.querySelector('.bg-img-top')
+        imgLayer.style.transition = `opacity ${gradientFadeSeconds}s ease`;
+        // After timeout, reset background image to ""
+        imgLayer.style.opacity = "0";
+    }
+
+        /**
+         * For a section with an image, update only if the image has changed.
+         */
+        function updateImageSection(sectionDiv, newImg) {
+
+            // Now, try to get a (possibly remaining) bg-layer.
+            let imgLayer = sectionDiv.querySelector('.bg-img-top');
+
+            // if there is currently no bg image set, set opacity to 0 so it can fade in at the end of this function
+            if (imgLayer.style.backgroundImage === "") {
+                imgLayer.style.opacity = 0;
+            }
+
+            // If there isn’t one, create one.
+            if (!imgLayer) {
+                imgLayer = document.createElement('div');
+                imgLayer.className = 'bg-layer bg-img-top';
+                sectionDiv.insertBefore(imgLayer, sectionDiv.firstChild);
+            }
+            // Always update the image. (You might forgo the if‑check to ensure the new data always resets it.)
+            imgLayer.style.backgroundImage = 'url(' + newImg + ')';
+            // Ensure the layer is visible and remove any transition styles if desired.
+            imgLayer.style.opacity = "1";
+        }
+
+        /**
+         * Updates (or creates) the sections based on fetched new data.
+         * Each data item is expected to have:
+         * - label
+         * - name (optional)
+         * - either 'img' or 'bg'
+         */
+        function updateSections(newData, mdName="") {
+            const container = document.getElementById('sections-container');
+
+            // If no sections exist yet, create them.
+            if (container.children.length === 0) {
+                newData.forEach(section => {
+                    const secElem = createSectionElement(section, mdName);
+                    container.appendChild(secElem);
+                });
+            } else {
+                // Update each existing section.
+                Array.from(container.children).forEach((sectionDiv, index) => {
+                    const newSectionData = newData[index];
+                    // Update label and name.
+                    const labelDiv = sectionDiv.querySelector('.label');
+                    labelDiv.innerText = newSectionData.label;
+                    let nameDiv = sectionDiv.querySelector('.name');
+                    if (newSectionData.name) {
+                        if (nameDiv) {
+                            nameDiv.innerText = newSectionData.name;
+                        } else {
+                            nameDiv = document.createElement('div');
+                            nameDiv.className = 'name';
+                            nameDiv.innerText = newSectionData.name;
+                            sectionDiv.appendChild(nameDiv);
+                        }
+                    } else if (nameDiv) {
+                        nameDiv.innerText = "";
+                    }
+
+                    let mdDiv = sectionDiv.querySelector('.md-label');
+                    if (newSectionData.name === mdName) {
+                        mdDiv.style.opacity = 1;
+                    }
+                    else{ 
+                        mdDiv.style.opacity = 0;
+                    }
+
+                    // If the section uses an image:
+                    if (newSectionData.img && newSectionData.img !== "") {
+                        updateImageSection(sectionDiv, newSectionData.img);
+                    }
+                    else {
+                        fadeOutImageSection(sectionDiv)
+                    }
+
+                    hideSectionIfNoName(sectionDiv)
+                });
+            }
+        }
+
+        /**
+         * Updates the label for the datetime of the service based on fetched new data.
+         * The DateTime label will just show the date and time of the service at the bottom of the page
+         */
+        function updateServiceInfoLabel(newDateTime, mdName) {
+            const container = document.getElementById('service-info');
+            
+            if (container) {
+                if (mdName && mdName != "") {
+                    container.textContent = "Music Director: " + mdName + "\n" + newDateTime;
+                }
+                else {
+                    container.textContent = newDateTime;
+                }
+            }
+        }
+
+        function fitText() {
+            const container = document.getElementById('sections-container');
+            Array.from(container.children).forEach((sectionDiv, index) => {
+                let nameLabel = sectionDiv.querySelector('.name');
+                adjustTextSize(nameLabel)
+            });
+        }
+
+        // Fetch updated data from the /data endpoint.
+        function loadSections() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    // data is expected to be an array of section objects.
+                    updateSections(data["sections"], data["mdName"]);
+                    updateServiceInfoLabel(data["serviceDateTime"], data["mdName"])
+                    fitText()
+                })
+                .catch(err => console.error(err));
+        }
+
+        // Initial load and then update every 5 seconds.
+        loadSections();
+        setInterval(loadSections, reloadDataSeconds * 1000);
+    </script>
+</body>
+
+</html>

@@ -25,3 +25,4 @@ static/fonts/*
 static/*.js*
 config/*
 .env
+static/images/*
