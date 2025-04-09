@@ -5,6 +5,12 @@ import getdropbox
 import json
 import random
 import os
+from dotenv import load_dotenv
+
+
+# From .env
+load_dotenv()
+DEBUGMODE = os.environ["DEBUGMODE"] 
 
 app = Flask(__name__)
 
@@ -80,4 +86,7 @@ if __name__ == "__main__":
     # Start the background thread before running the Flask app.
     pco.start_background_thread()
     getdropbox.start_background_thread()
-    app.run(debug=True, use_reloader=False)
+    if DEBUGMODE == "True" or DEBUGMODE == True:
+        app.run(debug=True, use_reloader=True)
+    else:
+        app.run(debug=False, use_reloader=False)
