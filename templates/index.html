@@ -118,6 +118,10 @@
             font-family: monospace;
             z-index: 2;
         }
+
+        .hide-cursor {
+            cursor: none;
+        }
     </style>
 </head>
 
@@ -127,6 +131,17 @@
     </div>
     <div class="bg-service-info-label" id="service-info"></div>
     <script>
+        // event listener to hide mouse after no movement
+        let timer;
+        document.addEventListener('mousemove', () => {
+            document.body.classList.remove('hide-cursor');
+            clearTimeout(timer);
+
+            timer = setTimeout(() => {
+                document.body.classList.add('hide-cursor');
+            }, 5000);
+        });
+
         const GRADIENTS = [
             "linear-gradient(145deg, #0d0d0d, #303030, #00ff7f)",
             "linear-gradient(145deg, #0a0a0a, #333333, #ff5722)",
