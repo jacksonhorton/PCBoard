@@ -3,17 +3,16 @@ from flask import Flask, jsonify, render_template
 import pco
 import getdropbox
 import json
-import random
 import os
-from dotenv import load_dotenv
-
-
-# From .env
-load_dotenv()
-DEBUGMODE = os.environ["DEBUGMODE"] 
+import argparse
 
 app = Flask(__name__)
 
+# check if debug flag is present
+parser = argparse.ArgumentParser(description="Check for debug mode flag.")
+parser.add_argument("-d", "--debug", action="store_true", help="Enable debug mode")
+args = parser.parse_args()
+DEBUGMODE = args.debug
 
 
 def fetch_data():
@@ -86,7 +85,7 @@ if __name__ == "__main__":
     # Start the background thread before running the Flask app.
     pco.start_background_thread()
     getdropbox.start_background_thread()
-    if DEBUGMODE == "True" or DEBUGMODE == True:
-        app.run(debug=True, use_reloader=True)
+    if DEBUGMODE == True:
+        app.run(debug=True, use_reloader=False)
     else:
         app.run(debug=False, use_reloader=False)

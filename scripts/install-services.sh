@@ -3,16 +3,15 @@
 set -e
 
 # Get directory of the current script
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
+SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../services" && pwd)"
 # Define the service file path
-MICBOARD_SERVICE_FILE="$SCRIPT_DIR/micboard.service"
-KIOSK_SERVICE_FILE="$SCRIPT_DIR/kiosk.service"
+MICBOARD_SERVICE_FILE="$SOURCE_DIR/micboard.service"
+KIOSK_SERVICE_FILE="$SOURCE_DIR/kiosk.service"
 
 # INSTALL MICBOARD Service File
 # Check if the file exists
 if [[ ! -f "$MICBOARD_SERVICE_FILE" ]]; then
-    echo "Error: micboard.service not found in $SCRIPT_DIR"
+    echo "Error: micboard.service not found in $SOURCE_DIR"
     exit 1
 fi
 
@@ -32,7 +31,7 @@ echo "✅ micboard.service installed, enabled, and started successfully."
 # INSTALL KIOSK Service File
 # Check if the file exists
 if [[ ! -f "$KIOSK_SERVICE_FILE" ]]; then
-    echo "Error: kiosk.service not found in $SCRIPT_DIR"
+    echo "Error: kiosk.service not found in $SOURCE_DIR"
     exit 1
 fi
 
