@@ -1,28 +1,28 @@
 {
     "sections": [
         {
-            "role": "Electric Guitar",
-            "name": "Zach Crawford"
+            "role": "Keys",
+            "name": "Jordan May"
         },
         {
             "role": "Drums",
             "name": "Terrell Johnson"
         },
         {
-            "role": "Bass Guitar",
-            "name": "Lee Jones"
+            "role": "Electric Guitar",
+            "name": "Jon Eaton"
         },
         {
             "role": "Acoustic Guitar",
-            "name": "Matthew Page"
+            "name": "Shelby Jackson"
         },
         {
             "role": "MD",
             "name": "Shelby Jackson"
         },
         {
-            "role": "Electric Guitar 2",
-            "name": "Shelby Jackson"
+            "role": "Bass Guitar",
+            "name": "Adrian Mastin"
         },
         {
             "role": "Vocal 1",
@@ -30,21 +30,21 @@
         },
         {
             "role": "Vocal 2",
-            "name": "Dustin Doyle"
-        },
-        {
-            "role": "Vocal 3",
             "name": "Jennifer Hamilton"
         },
         {
+            "role": "Vocal 3",
+            "name": "Tylan Johnson"
+        },
+        {
             "role": "Host 1",
-            "name": "Erica Ross"
+            "name": "Elle Koelling"
         },
         {
             "role": "Host 2",
-            "name": "Justin Brazzell"
+            "name": "Jed Ikechukwu"
         }
     ],
-    "serviceDateTime": "Sunday, April 13 at 8:00 AM",
+    "serviceDateTime": "Sunday, May 11 at 8:00 AM",
     "mdName": "Shelby Jackson"
 }

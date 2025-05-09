@@ -15,18 +15,6 @@ args = parser.parse_args()
 DEBUGMODE = args.debug
 
 
-def fetch_data():
-    """Background thread function to fetch data periodically."""
-    while True:
-        try:
-            # Replace this with your code to fetch data from Planning Center online.
-            print("Fetching data from Planning Center online...")
-            # For example, you might update a JSON file or shared variable here.
-            time.sleep(60)  # Wait for 60 seconds before fetching again.
-        except Exception as e:
-            print(f"Error fetching data: {e}")
-            time.sleep(60)
-
 def get_sections():
     """Reads section configuration from config.json."""
     with open("config.json") as f:
@@ -85,7 +73,4 @@ if __name__ == "__main__":
     # Start the background thread before running the Flask app.
     pco.start_background_thread()
     getdropbox.start_background_thread()
-    if DEBUGMODE == True:
-        app.run(debug=True, use_reloader=False)
-    else:
-        app.run(debug=False, use_reloader=False)
+    app.run(debug=DEBUGMODE, use_reloader=False)
