@@ -38,9 +38,9 @@ def index():
 
 @app.route("/data")
 def data():
+    errorMessage = ""
     # get sections configuration
     sections = get_sections()
-    
     try:
         with open("data.json") as f:
             raw_data = f.read()
@@ -66,7 +66,8 @@ def data():
         "success": True,
         "sections": sections,
         "serviceDateTime": serviceDateTime,
-        "mdName": mdName
+        "mdName": mdName,
+        "error": errorMessage
     })
 
 if __name__ == "__main__":

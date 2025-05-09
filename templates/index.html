@@ -134,7 +134,8 @@
             flex-direction: column;
             justify-content: flex-end;
             gap: 1rem;
-            max-width: 15%;
+            max-width: 20%;
+            pointer-events: none;
             .error-message {
                 padding: 1rem;
                 border-radius: 0.25rem;
@@ -143,13 +144,21 @@
                 display: flex;
                 align-items: center; /* Vertically center */
                 justify-content: center;
-                width: 100%;
+                width: fit-content;
                 img {
                     width: 1rem;
                     height: 1rem;
                     padding-bottom: 0.15rem;
-                    padding-right: .25rem;
+                    padding-right: 1rem;
                 }
+            }
+            .error-hide {
+                display: none;
+            }
+            p {
+                padding: 0;
+                margin: 0;
+                font-family: monospace;
             }
         }
     </style>
@@ -157,11 +166,17 @@
 
 <body>
     <div class="error-container">
-        <div class="error-message">
-            <img src="../static/error.svg"/> Warning 11213123213123123
+        <div id="PCO_CONN_ERR" class="error-message error-hide">
+            <img src="../static/error.svg"/> <p class="error-text">Unable to connect to Planning Center!</p>
         </div>
-        <div class="error-message">
-            Warning 2
+        <div id="NO_SECTIONS_ERR" class="error-message error-hide">
+            <img src="../static/error.svg" /> <p class="error-text">No roles were found!</p>
+        </div>
+        <div id="LOCAL_SERVER_ERR" class="error-message error-hide">
+            <img src="../static/error.svg" /> <p class="error-text">Unable to connect to server!</p>
+        </div>
+        <div id="MISC_ERR" class="error-message error-hide">
+            <img src="../static/error.svg" /> <p class="error-text"></p>
         </div>
     </div>
     <div class="container" id="sections-container">
@@ -183,14 +198,6 @@
         // Also hide cursor on load
         document.body.classList.add('hide-cursor');
 
-        const errors = {
-            "" : {
-                message: "No "
-            },
-            "NODATA" : {
-                message: "No "
-            }
-        };
         const GRADIENTS = [
             "linear-gradient(145deg, #0d0d0d, #303030, #00ff7f)",
             "linear-gradient(145deg, #0a0a0a, #333333, #ff5722)",
@@ -260,6 +267,19 @@
             } catch (error) {
                 // console.log("Failed to resize text for " + el);
                 return
+            }
+        }
+
+        function setErrorVisibility(errorId, shouldBeVisible) {
+            errDiv = document.getElementById(errorId);
+            if (errDiv) {
+                if (shouldBeVisible) {
+                    console.log(`Showing error: ${errorId}`);
+                    errDiv.classList.remove('error-hide');
+                }
+                else {
+                    errDiv.classList.add('error-hide');
+                }
             }
         }
         
@@ -342,17 +362,17 @@
             return sectionDiv;
         }
 
-    function fadeOutImageSection(sectionDiv) {
-        if (sectionDiv.style.opacity === 0) {
-            // No change; nothing to update. Just make sure background image is clear
-            imgLayer.style.backgroundImage = "";
-            return;
-        } 
-        let imgLayer = sectionDiv.querySelector('.bg-img-top')
-        imgLayer.style.transition = `opacity ${gradientFadeSeconds}s ease`;
-        // After timeout, reset background image to ""
-        imgLayer.style.opacity = "0";
-    }
+        function fadeOutImageSection(sectionDiv) {
+            if (sectionDiv.style.opacity === 0) {
+                // No change; nothing to update. Just make sure background image is clear
+                imgLayer.style.backgroundImage = "";
+                return;
+            } 
+            let imgLayer = sectionDiv.querySelector('.bg-img-top')
+            imgLayer.style.transition = `opacity ${gradientFadeSeconds}s ease`;
+            // After timeout, reset background image to ""
+            imgLayer.style.opacity = "0";
+        }
 
         /**
          * For a section with an image, update only if the image has changed.
@@ -467,12 +487,45 @@
             fetch('/data')
                 .then(response => response.json())
                 .then(data => {
+                    // check if no sections are provided with names (no sections to show)
+                    try {
+                        const filteredSections = data["sections"].filter(item => "name" in item);
+                        if (filteredSections.length == 0) {
+                            setErrorVisibility("NO_SECTIONS_ERR", true);
+                        }
+                        else {
+                            setErrorVisibility("NO_SECTIONS_ERR", false);
+                        }
+                    }
+                    catch {
+                        setErrorVisibility("NO_SECTIONS_ERR", true);
+                    }
+                    
+                    // show any errors sent from server
+                    if (data["error"] && data["error"] != "") {
+                        setErrorVisibility("MISC_ERR", true);
+                        errDiv = document.getElementById('MISC_ERR');
+                        if (errDiv) {
+                            errText = errDiv.querySelector('p.error-text');
+                            if (errText) {
+                                errText.textContent = data["error"];
+                            }
+                        }
+                    }
+                    else {
+                        setErrorVisibility("MISC_ERR", false);
+                    }
+
                     // data is expected to be an array of section objects.
                     updateSections(data["sections"], data["mdName"]);
                     updateServiceInfoLabel(data["serviceDateTime"], data["mdName"])
                     fitText()
+                    setErrorVisibility("LOCAL_SERVER_ERR", false);
                 })
-                .catch(err => console.error(err));
+                .catch(err => {
+                    console.error(err);
+                    setErrorVisibility("LOCAL_SERVER_ERR", true);
+                });
         }
 
         // Initial load and then update every 5 seconds.
