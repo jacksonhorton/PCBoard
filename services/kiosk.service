@@ -8,9 +8,10 @@ Environment=XAUTHORITY=/home/pi/.Xauthority
 Environment=DISPLAY=:0
 User=pi
 Group=pi
-ExecStartPre=/bin/sleep 30
+ExecStartPre=/bin/sleep 35
 ExecStart=/usr/bin/chromium-browser --noerrdialogs --start-fullscreen --disable-infobars --disable-session-crashed-bubble --app=http://localhost:5000/
 Restart=on-failure
+RestartSec=30s
 
 [Install]
 WantedBy=graphical.target
