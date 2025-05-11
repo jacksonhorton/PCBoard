@@ -5,7 +5,7 @@ import getdropbox
 import json
 import os
 import argparse
-
+from enum import Enum
 app = Flask(__name__)
 
 # check if debug flag is present
@@ -13,6 +13,38 @@ parser = argparse.ArgumentParser(description="Check for debug mode flag.")
 parser.add_argument("-d", "--debug", action="store_true", help="Enable debug mode")
 args = parser.parse_args()
 DEBUGMODE = args.debug
+
+class ErrorType(Enum):
+    INVALID_PCO_CREDENTIALS = "Invalid PlanningCenter credentials!"
+    PCO_CONN_ERR = "Unable to connect to PlanningCenter!"
+    INVALID_DB_CREDENTIALS = "Invalid Dropbox credentials!"
+    DB_CONN_ERR = "Unable to connect to Dropbox!"
+    
+class ServerError:
+    def __init__(self):
+        self.errors = []
+    def logError(self, error_type: ErrorType):
+        print("Adding error " + error_type.name)
+        if isinstance(error_type, ErrorType):
+            if not error_type in self.errors:
+                self.errors.append(error_type)
+    def clearError(self, error_type: ErrorType):
+        if isinstance(error_type, ErrorType):
+            if error_type in self.errors:
+                self.errors.remove(error_type)
+    def __str__(self):
+        if len(self.errors) == 0:
+            return ""
+        else:
+            errorString = ""
+            for error in self.errors:
+                errorString += error.value + " "
+            return errorString
+    def hasError(self):
+        return len(self.errors) > 0
+
+serverError = ServerError()
+
 
 
 def get_sections():
@@ -38,7 +70,7 @@ def index():
 
 @app.route("/data")
 def data():
-    errorMessage = ""
+    global serverError
     # get sections configuration
     sections = get_sections()
     try:
@@ -49,6 +81,13 @@ def data():
             data = json.loads(raw_data)
     except Exception as e:
         data = {"sections":[], "serviceDateTime":""}
+        
+    if "error" in data:
+        try:
+            serverError.logError(ErrorType[data["error"]])
+        except Exception as e:
+            pass
+    
     people = data.get("sections", [])
     # Add image URLs and persons name to each slot if available.
     for person in people:
@@ -67,7 +106,7 @@ def data():
         "sections": sections,
         "serviceDateTime": serviceDateTime,
         "mdName": mdName,
-        "error": errorMessage
+        "error": str(serverError)
     })
 
 if __name__ == "__main__":

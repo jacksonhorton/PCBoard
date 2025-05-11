@@ -12,6 +12,7 @@ from datetime import datetime
 from datetime import date
 from datetime import timedelta
 from unicodedata import name
+from app import ErrorType, ServerError
 
 sys.path.append("/usr/local/lib/python3.9/site-packages")
 sys.path.insert(0,'./')
@@ -23,8 +24,8 @@ import pytz
 
 # From .env
 load_dotenv()
-PCO_APPLICATION_KEY = os.environ["PCO_APPLICATION_KEY"] 
-PCO_API_SECRET = os.environ["PCO_API_SECRET"]
+PCO_APPLICATION_KEY = os.getenv("PCO_APPLICATION_KEY", "")
+PCO_API_SECRET = os.getenv("PCO_API_SECRET", "")
 
 # Constants
 FIRST_VOCALIST_SLOT = 1
@@ -33,7 +34,7 @@ FIRST_HOST_SLOT = 4
 MAX_NUM_HOSTS = 2
 
 # PCO Stuff
-pco = pypco.PCO(PCO_APPLICATION_KEY, PCO_API_SECRET)
+pco = None
 attachment_list = []
 next_upcoming_plan = {}
 service_types = {}
@@ -42,8 +43,16 @@ allowed_team_ids = {'1948319', '3611711'}
 nowPlus = date.today() + timedelta(days=6)
 now = nowPlus.strftime("%Y-%m-%dT%H:%M:%S%z")
 
+def initializePCO() -> bool:
+    global pco
+    if PCO_API_SECRET == "" or PCO_APPLICATION_KEY == "":
+        
+        return False
+    else:
+        pco = pypco.PCO(PCO_APPLICATION_KEY, PCO_API_SECRET)
+        return True
 
-    
+
 def fetch_data():
     """Background function that fetches data from Planning Center online."""
     while True:
@@ -56,7 +65,6 @@ def fetch_data():
             
         except Exception as e:
             print(f"Error fetching data: {e}")
-
         time.sleep(600)
         
 def findMDName(data):
@@ -155,8 +163,14 @@ def update_data_file(sections=[], serviceDateTime=""):
 
 def start_background_thread():
     """Starts the background thread for fetching data."""
-    thread = threading.Thread(target=fetch_data, daemon=True)
-    thread.start()
+    if initializePCO():
+        thread = threading.Thread(target=fetch_data, daemon=True)
+        thread.start()
+    else:
+        # clear the data file
+        with open('data.json', 'w') as f:
+            f.write(f'{{"error":"{ErrorType.PCO_CONN_ERR.name}"}}')
+            print("Error starting PCO integreation!")
 
 if __name__ == "__main__":
     fetch_data()

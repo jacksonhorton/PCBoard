@@ -166,13 +166,10 @@
 
 <body>
     <div class="error-container">
-        <div id="PCO_CONN_ERR" class="error-message error-hide">
-            <img src="../static/error.svg"/> <p class="error-text">Unable to connect to Planning Center!</p>
-        </div>
         <div id="NO_SECTIONS_ERR" class="error-message error-hide">
             <img src="../static/error.svg" /> <p class="error-text">No roles were found!</p>
         </div>
-        <div id="LOCAL_SERVER_ERR" class="error-message error-hide">
+        <div id="LOCAL_SERVER_CONN_ERR" class="error-message error-hide">
             <img src="../static/error.svg" /> <p class="error-text">Unable to connect to server!</p>
         </div>
         <div id="MISC_ERR" class="error-message error-hide">
@@ -487,20 +484,10 @@
             fetch('/data')
                 .then(response => response.json())
                 .then(data => {
-                    // check if no sections are provided with names (no sections to show)
-                    try {
-                        const filteredSections = data["sections"].filter(item => "name" in item);
-                        if (filteredSections.length == 0) {
-                            setErrorVisibility("NO_SECTIONS_ERR", true);
-                        }
-                        else {
-                            setErrorVisibility("NO_SECTIONS_ERR", false);
-                        }
-                    }
-                    catch {
-                        setErrorVisibility("NO_SECTIONS_ERR", true);
-                    }
-                    
+                    // hide any other errors (Server errors take priority)
+                    setErrorVisibility("NO_SECTIONS_ERR", false);
+                    setErrorVisibility("LOCAL_SERVER_CONN_ERR", false);
+
                     // show any errors sent from server
                     if (data["error"] && data["error"] != "") {
                         setErrorVisibility("MISC_ERR", true);
@@ -514,17 +501,32 @@
                     }
                     else {
                         setErrorVisibility("MISC_ERR", false);
+                        
+                        // check if no sections are provided with names (no sections to show)
+                        try {
+                            const filteredSections = data["sections"].filter(item => "name" in item);
+                            if (filteredSections.length == 0) {
+                                setErrorVisibility("NO_SECTIONS_ERR", true);
+                            }
+                            else {
+                                setErrorVisibility("NO_SECTIONS_ERR", false);
+                            }
+                        }
+                        catch {
+                            setErrorVisibility("NO_SECTIONS_ERR", true);
+                        }
+    
+                        // data is expected to be an array of section objects.
+                        updateSections(data["sections"], data["mdName"]);
+                        updateServiceInfoLabel(data["serviceDateTime"], data["mdName"])
+                        fitText()
+                        setErrorVisibility("LOCAL_SERVER_CONN_ERR", false);
                     }
 
-                    // data is expected to be an array of section objects.
-                    updateSections(data["sections"], data["mdName"]);
-                    updateServiceInfoLabel(data["serviceDateTime"], data["mdName"])
-                    fitText()
-                    setErrorVisibility("LOCAL_SERVER_ERR", false);
                 })
                 .catch(err => {
                     console.error(err);
-                    setErrorVisibility("LOCAL_SERVER_ERR", true);
+                    setErrorVisibility("LOCAL_SERVER_CONN_ERR", true);
                 });
         }
 
