@@ -58,7 +58,7 @@ def get_image_url(name):
     if not name:
         return ""
     sanitized = name.lower().replace(" ", "_")
-    for ext in [".jpg", ".png"]:
+    for ext in [".jpg", ".png", ".JPG", ".JPEG",".jpeg",".PNG"]:
         image_path = os.path.join("static", "images", sanitized + ext)
         if os.path.exists(image_path):
             return f"/static/images/{sanitized}{ext}"
