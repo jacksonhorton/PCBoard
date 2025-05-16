@@ -109,7 +109,7 @@ def getTeam(upcoming_plan):
     # print(assigned_team_members)
     
     slots = []
-    vocals = []
+    # vocals = []
     hosts = []
     for team_member in assigned_team_members:
             # vocalString = str(intNumber) + '-' + vocal_team_member['data']['attributes']['name']
@@ -118,9 +118,9 @@ def getTeam(upcoming_plan):
             pcoPosition = team_member['data']['attributes']['team_position_name']
             # print(pcoPosition)
             slot_number = False
-            if pcoPosition == "Vocalist":
-                vocals.append(name)
-            elif pcoPosition == "Host":
+            # if pcoPosition == "Vocalist":
+            #     vocals.append(name)
+            if pcoPosition == "Host":
                 hosts.append(name)
             else:
                 newslot={'role': pcoPosition, 'name':name}
@@ -128,13 +128,13 @@ def getTeam(upcoming_plan):
 
                     
     # sort everyone and assign slots
-    vocals = sorted(vocals)
+    # vocals = sorted(vocals)
     hosts = sorted(hosts)
     
-    for index, name in enumerate(vocals):
-        if (index < MAX_NUM_VOCALISTS):
-            newslot={'role':f"Vocal {index+FIRST_VOCALIST_SLOT}", 'name':name}
-            slots.append(newslot)
+    # for index, name in enumerate(vocals):
+    #     if (index < MAX_NUM_VOCALISTS):
+    #         newslot={'role':f"Vocal {index+FIRST_VOCALIST_SLOT}", 'name':name}
+    #         slots.append(newslot)
     for index, name in enumerate(hosts):
         if (index < MAX_NUM_HOSTS):
             newslot={'role':f"Host {index+FIRST_VOCALIST_SLOT}", 'name':name}
