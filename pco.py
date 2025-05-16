@@ -46,7 +46,6 @@ now = nowPlus.strftime("%Y-%m-%dT%H:%M:%S%z")
 def initializePCO() -> bool:
     global pco
     if PCO_API_SECRET == "" or PCO_APPLICATION_KEY == "":
-        
         return False
     else:
         pco = pypco.PCO(PCO_APPLICATION_KEY, PCO_API_SECRET)

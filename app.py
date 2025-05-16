@@ -1,18 +1,24 @@
 import time
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 import pco
 import getdropbox
 import json
 import os
+import threading
 import argparse
+from datetime import datetime
 from enum import Enum
 app = Flask(__name__)
+
 
 # check if debug flag is present
 parser = argparse.ArgumentParser(description="Check for debug mode flag.")
 parser.add_argument("-d", "--debug", action="store_true", help="Enable debug mode")
 args = parser.parse_args()
 DEBUGMODE = args.debug
+
+HOST = '0.0.0.0'
+PORT = '1090'
 
 class ErrorType(Enum):
     INVALID_PCO_CREDENTIALS = "Invalid PlanningCenter credentials!"
@@ -43,8 +49,8 @@ class ServerError:
     def hasError(self):
         return len(self.errors) > 0
 
-serverError = ServerError()
 
+serverError = ServerError()
 
 
 def get_sections():
@@ -63,6 +69,12 @@ def get_image_url(name):
         if os.path.exists(image_path):
             return f"/static/images/{sanitized}{ext}"
     return ""
+
+@app.before_request
+def log_request():
+    # log each request when in production mode
+    if not DEBUGMODE:
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - - {request.method} {request.path}")
 
 @app.route("/")
 def index():
@@ -113,4 +125,14 @@ if __name__ == "__main__":
     # Start the background thread before running the Flask app.
     pco.start_background_thread()
     getdropbox.start_background_thread()
-    app.run(debug=DEBUGMODE, use_reloader=False)
+    if DEBUGMODE:
+        app.run(debug=True, use_reloader=False, host=HOST, port=PORT)
+    else:
+        try:
+            from waitress import serve
+            print(f"Running with Waitress production server on http://{HOST}:{PORT}")
+            serve(app, host=HOST, port=PORT, threads=4)
+        except ImportError:
+            print("Waitress not found. Install with: pip install waitress")
+            print("Falling back to Flask development server (not recommended for production)")
+            app.run(debug=False, use_reloader=False, host=HOST, port=PORT)

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Kiosk Loader</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #app-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: sans-serif;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+    </style>
+    <script>
+        const APP_URL = 'http://localhost:1090/';
+        const RETRY_MS = 3000;
+
+        function tryLoad() {
+            fetch(APP_URL, { mode: 'no-cors' })
+                .then(() => {
+                    // hide “loading” and actually navigate the iframe
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('app-frame').src = APP_URL;
+                })
+                .catch(() => {
+                    // still down — show “loading” and retry in a bit
+                    document.getElementById('loading').style.display = 'block';
+                    setTimeout(tryLoad, RETRY_MS);
+                });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            tryLoad();
+        });
+    </script>
+</head>
+
+<body>
+    <iframe id="app-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+    <div id="loading">⏳ Waiting for server to start...</div>
+</body>
+
+</html>

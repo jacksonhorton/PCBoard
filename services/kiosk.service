@@ -6,10 +6,10 @@ Requires=micboard.service
 [Service]
 Environment=XAUTHORITY=/home/pi/.Xauthority
 Environment=DISPLAY=:0
+WorkingDirectory=/home/pi/Overflow-Micboard
 User=pi
 Group=pi
-ExecStartPre=/bin/sleep 35
-ExecStart=/usr/bin/chromium-browser --noerrdialogs --start-fullscreen --disable-infobars --disable-session-crashed-bubble --app=http://localhost:5000/
+ExecStart=/usr/bin/chromium-browser --noerrdialogs --start-fullscreen --disable-infobars --disable-session-crashed-bubble --app=file:///home/pi/Overflow-Micboard/loader.html
 Restart=always
 RestartSec=30s
 
