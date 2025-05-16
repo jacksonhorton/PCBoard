@@ -22,3 +22,4 @@ config/*
 static/images/*
 config.json
 data.json
+./data.json
