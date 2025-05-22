@@ -1,5 +1,6 @@
 {
     "sections": [
+        
         {
             "label": "Vocal 1",
             "role": "Vocal 1"
@@ -15,6 +16,22 @@
         {
             "label": "Vocal 4",
             "role": "Vocal 4"
+        },
+        {
+            "label": "Vocalist",
+            "role": "Unassigned Vocalist 1"
+        },
+        {
+            "label": "Vocalist",
+            "role": "Unassigned Vocalist 2"
+        },
+        {
+            "label": "Vocalist",
+            "role": "Unassigned Vocalist 3"
+        },
+        {
+            "label": "Vocalist",
+            "role": "Unassigned Vocalist 4"
         },
         {
             "label": "Drums",
@@ -47,6 +64,14 @@
         {
             "label": "Host 2",
             "role": "Host 2"
+        },
+        {
+            "label": "Host",
+            "role": "Unassigned Host 1"
+        },
+        {
+            "label": "Host",
+            "role": "Unassigned Host 2"
         }
     ]
 }

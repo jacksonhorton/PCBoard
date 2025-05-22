@@ -83,7 +83,7 @@ def index():
 @app.route("/data")
 def data():
     global serverError
-    # get sections configuration
+    # get sections configuration; comes from pco.py via data.json file
     sections = get_sections()
     try:
         with open("data.json") as f:

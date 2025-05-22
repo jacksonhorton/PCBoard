@@ -109,8 +109,8 @@ def getTeam(upcoming_plan):
     # print(assigned_team_members)
     
     slots = []
-    # vocals = []
-    hosts = []
+    otherVocals = []
+    otherHosts = []
     for team_member in assigned_team_members:
             # vocalString = str(intNumber) + '-' + vocal_team_member['data']['attributes']['name']
             name=team_member['data']['attributes']['name']
@@ -118,28 +118,27 @@ def getTeam(upcoming_plan):
             pcoPosition = team_member['data']['attributes']['team_position_name']
             # print(pcoPosition)
             slot_number = False
-            # if pcoPosition == "Vocalist":
-            #     vocals.append(name)
+            if pcoPosition == "Vocalist":
+                otherVocals.append(name)
             if pcoPosition == "Host":
-                hosts.append(name)
+                otherHosts.append(name)
             else:
                 newslot={'role': pcoPosition, 'name':name}
                 slots.append(newslot)
 
                     
     # sort everyone and assign slots
-    # vocals = sorted(vocals)
-    hosts = sorted(hosts)
+    otherVocals = sorted(otherVocals)
+    otherHosts = sorted(otherHosts)
     
-    # for index, name in enumerate(vocals):
-    #     if (index < MAX_NUM_VOCALISTS):
-    #         newslot={'role':f"Vocal {index+FIRST_VOCALIST_SLOT}", 'name':name}
-    #         slots.append(newslot)
-    for index, name in enumerate(hosts):
-        if (index < MAX_NUM_HOSTS):
-            newslot={'role':f"Host {index+FIRST_VOCALIST_SLOT}", 'name':name}
+    for index, name in enumerate(otherVocals):
+        if (index < MAX_NUM_VOCALISTS):
+            newslot={'role':f"Unassigned Vocalist {index+FIRST_VOCALIST_SLOT}", 'name':name}
             slots.append(newslot)
-
+    for index, name in enumerate(otherHosts):
+        if (index < MAX_NUM_HOSTS):
+            newslot={'role':f"Unassigned Host {index+FIRST_VOCALIST_SLOT}", 'name':name}
+            slots.append(newslot)
     return slots
 
 def update_data_file(sections=[], serviceDateTime=""):
