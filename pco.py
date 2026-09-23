@@ -10,6 +10,7 @@ from turtle import position
 import time
 from datetime import datetime
 from datetime import date
+from datetime import time as datetime_time
 from datetime import timedelta
 from unicodedata import name
 from app import ErrorType, ServerError
@@ -77,28 +78,33 @@ def getServiceTypes():
     service_types = [service_type for service_type in service_types if service_type['data']['attributes']['name'] in allowed_service_types]
     return service_types
 
+def parse_pco_datetime(value):
+    if value.endswith('Z'):
+        value = value[:-1] + '+00:00'
+    return datetime.fromisoformat(value)
+
+def end_of_plan_day(plan_datetime):
+    next_day = plan_datetime.date() + timedelta(days=1)
+    return datetime.combine(next_day, datetime_time.min, tzinfo=plan_datetime.tzinfo)
+
 def getUpcomngPlan():
-    utc = pytz.UTC
-    today = utc.localize(datetime.now())
+    today = datetime.now(pytz.UTC)
     service_types = getServiceTypes()
     next_upcoming_plan = {}
     for service_type in service_types:
         raw_plans = pco.iterate('/services/v2/service_types/' + service_type['data']['id'] + '/plans', per_page=50, order='-sort_date', include='plan_times')
         for raw_plan in raw_plans:
             # print(f"raw plan:  {raw_plan['data']['attributes']['sort_date']}")
-            service_length = raw_plan['data']['attributes']['total_length']
-            # service_length = service_length + 300
-            service_length = service_length + 50000
-            sort_date =  datetime.strptime(raw_plan['data']['attributes']['sort_date'],'%Y-%m-%dT%H:%M:%S%z')
-            end_date = sort_date + timedelta(seconds=service_length)
-            if next_upcoming_plan:
-                next_date = datetime.strptime(next_upcoming_plan['data']['attributes']['sort_date'], '%Y-%m-%dT%H:%M:%S%z')
-                if sort_date < next_date:
-                    if end_date > today:
-                        next_upcoming_plan = raw_plan
-            else:
-                if end_date > today:
-                    next_upcoming_plan = raw_plan
+            sort_date = parse_pco_datetime(raw_plan['data']['attributes']['sort_date'])
+            end_date = end_of_plan_day(sort_date)
+            if end_date <= today:
+                continue
+            if not next_upcoming_plan:
+                next_upcoming_plan = raw_plan
+                continue
+            next_date = parse_pco_datetime(next_upcoming_plan['data']['attributes']['sort_date'])
+            if sort_date < next_date:
+                next_upcoming_plan = raw_plan
     return next_upcoming_plan
 
 def getTeam(upcoming_plan):
@@ -145,9 +151,9 @@ def update_data_file(sections=[], serviceDateTime=""):
     # try to format service datetime
     formattedServiceDateTime = ""
     try:
-        dt = datetime.strptime(serviceDateTime, "%Y-%m-%dT%H:%M:%SZ")
+        dt = parse_pco_datetime(serviceDateTime)
         formattedServiceDateTime = dt.strftime("%A, %B %d at %-I:%M %p")
-    except:
+    except Exception:
         print("Failed to format incoming serviceDateTime. This can be ignored.")
     
     data = {}
